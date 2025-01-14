@@ -14,10 +14,12 @@ export type FormDataType = {
 
 export type FormDataTypeProps = {
     formData: FormDataType;
+    isFirstLoad?: boolean
 }
 
 export type PageProps = {
     formData: FormDataType
     updateFormData: (newData: Partial<FormDataType>) => void
     getErrorMessage: (field: string) => string | undefined
+    isFirstLoad?: boolean
 }

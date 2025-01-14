@@ -1,8 +1,10 @@
+import { motion } from "framer-motion";
+
 import { PageProps } from '@/app/types/formDataType'
 import { TextAreaField } from '../InputField'
 import { validateFile } from '@/ีutils/validateFile';
 
-export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage }) => {
+export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage, isFirstLoad }) => {
 
     const hdlShowSelectFile = (file: File | null) => {
         if (file) {
@@ -19,7 +21,11 @@ export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
 
     return (
         <div>
-            <div className='mb-4'>
+            <motion.div
+                initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+                animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
+                transition={{ duration: 2 }}
+                className='mb-4'>
                 <label className="block font-bold">Education</label>
                 <select
                     value={formData.education}
@@ -38,7 +44,7 @@ export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 {getErrorMessage("education") && (
                     <p className="text-red-500 text-xs">{getErrorMessage("education")}</p>
                 )}
-            </div>
+            </motion.div>
             <TextAreaField
                 label="Work Experience"
                 name="experience"
@@ -46,12 +52,17 @@ export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 placeholder='Enter your work experience'
                 value={formData.experience}
                 rows={4}
-                onChange={(value) => updateFormData({ experience: value })} />
+                onChange={(value) => updateFormData({ experience: value })}
+                isFirstLoad={isFirstLoad} />
             {getErrorMessage("experience") && (
                 <p className="text-red-500 text-xs mb-4">{getErrorMessage("experience")}</p>
             )}
 
-            <div className="flex flex-col gap-2">
+            <motion.div
+                initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+                animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
+                transition={{ duration: 2 }}
+                className="flex flex-col gap-2 my-4">
                 <label className="font-bold">Upload Resume:</label>
                 <input
                     type="file"
@@ -65,7 +76,7 @@ export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 {getErrorMessage("resumeUrl") && (
                     <p className="text-red-500 text-xs">{getErrorMessage("resumeUrl")}</p>
                 )}
-            </div>
+            </motion.div>
 
         </div>
     )

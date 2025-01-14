@@ -22,7 +22,8 @@ export default function HomePage() {
   const [step, setStep] = useState(1);
   const [isReview, setIsReview] = useState(false);
   const [errors, setErrors] = useState<ErrorType[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const [formData, setFormData] = useState<FormDataType>({
     prefix: "",
@@ -122,6 +123,7 @@ export default function HomePage() {
     console.log("Current Step:", step);
     console.log("Errors:", currentErrors);
 
+    setIsFirstLoad(true)
 
     if (currentErrors.length === 0) {
       setStep((prev) => Math.min(prev + 1, 4));
@@ -135,6 +137,7 @@ export default function HomePage() {
   };
 
   const hdlPrevStep = () => {
+    setIsFirstLoad(false)
     setStep((prev) => Math.max(prev - 1, 1));
   }
 
@@ -152,6 +155,7 @@ export default function HomePage() {
         formData={formData}
         updateFormData={updateFormData}
         getErrorMessage={getErrorMessage}
+        isFirstLoad={isFirstLoad}
       />
     }
     else if (step === 2) {
@@ -159,6 +163,7 @@ export default function HomePage() {
         formData={formData}
         updateFormData={updateFormData}
         getErrorMessage={getErrorMessage}
+        isFirstLoad={isFirstLoad}
       />
     }
     else if (step === 3) {
@@ -166,17 +171,19 @@ export default function HomePage() {
         formData={formData}
         updateFormData={updateFormData}
         getErrorMessage={getErrorMessage}
+        isFirstLoad={isFirstLoad}
       />
     }
     else if (step === 4) {
       return <ReviewForm
         formData={formData}
+        isFirstLoad={isFirstLoad}
       />
     }
   }
 
   const submitFormData = async () => {
-    setIsSubmitting(true);
+    setIsLoading(true);
     try {
 
       const formInputData = new FormData();
@@ -205,7 +212,7 @@ export default function HomePage() {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        setIsSubmitting(false);
+        setIsLoading(false);
 
         toast.success(resp.data.message);
         resetFormInput(true);
@@ -286,7 +293,10 @@ export default function HomePage() {
       setFormData(JSON.parse(savedFormData));
     }
 
+    setIsFirstLoad(false);
+
   }, [])
+
 
   const saveFormDataTolocalStorage = () => {
 
@@ -295,9 +305,10 @@ export default function HomePage() {
 
   }
 
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6 text-black">
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-xl">
+      <div className="bg-white p-6 rounded shadow-lg w-full max-w-xl">
         <div className="flex justify-center relative">
           <h1 className="text-2xl font-bold mb-4 text-center">
             {step < 4 ? "Multistep Form" : "Review Form"}
@@ -327,7 +338,7 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      {isSubmitting && (
+      {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="flex flex-col items-center">
             <div className="loader"></div>

@@ -1,11 +1,18 @@
+import { motion } from "framer-motion";
+
 import { PageProps } from '@/app/types/formDataType'
 import { InputField } from '../InputField'
 
-export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage }) => {
+export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage, isFirstLoad }) => {
+
 
     return (
         <div>
-            <div className='mb-4'>
+            <motion.div
+                initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+                animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
+                transition={{ duration: 2 }}
+                className='mb-4'>
                 <label className="font-bold">Prefix</label>
                 <select
                     className='w-full border p-2 border-gray-300 rounded mt-2'
@@ -18,7 +25,7 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                     <option value="Other">Other</option>
                 </select>
                 {getErrorMessage("prefix") && <p className='text-red-500 text-sm'>{getErrorMessage("prefix")}</p>}
-            </div>
+            </motion.div>
             <InputField
                 label='First Name'
                 type="text"
@@ -27,7 +34,8 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 placeholder='Enter your first name'
                 value={formData.firstName}
                 onChange={(value) => updateFormData({ firstName: value })}
-                error={getErrorMessage("firstName")} />
+                error={getErrorMessage("firstName")}
+                isFirstLoad={isFirstLoad} />
             <InputField
                 label='Last Name'
                 type="text"
@@ -36,7 +44,8 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 placeholder='Enter your last name'
                 value={formData.lastName}
                 onChange={(value) => updateFormData({ lastName: value })}
-                error={getErrorMessage("lastName")} />
+                error={getErrorMessage("lastName")}
+                isFirstLoad={isFirstLoad} />
             <InputField
                 label='Email'
                 type="email"
@@ -45,7 +54,8 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 placeholder='Enter your email'
                 value={formData.email}
                 onChange={(value) => updateFormData({ email: value })}
-                error={getErrorMessage("email")} />
+                error={getErrorMessage("email")}
+                isFirstLoad={isFirstLoad} />
             <InputField
                 label='Phone Number'
                 type="text"
@@ -54,7 +64,8 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 placeholder='Enter your phone number'
                 value={formData.phoneNumber}
                 onChange={(value) => updateFormData({ phoneNumber: value })}
-                error={getErrorMessage("phoneNumber")} />
+                error={getErrorMessage("phoneNumber")}
+                isFirstLoad={isFirstLoad} />
         </div>
     )
 }
