@@ -4,18 +4,20 @@ type InputFieldProps = {
     value: string | number | null;
     name: string;
     placeholder: string;
+    id: string;
     onChange: (value: any) => void;
     error?: string;
     required?: boolean;
 }
 
-export const InputField: React.FC<InputFieldProps> = ({ label, type, value, name, placeholder, onChange, error, required }) => (
+export const InputField: React.FC<InputFieldProps> = ({ label, type, id, value, name, placeholder, onChange, error, required }) => (
 
     <div>
-        <label>{label}</label>
+        <label htmlFor={id}>{label}</label>
         <input
             type={type}
             name={name}
+            id={id}
             value={value || ""}
             placeholder={placeholder}
             required={required}
@@ -29,6 +31,8 @@ type TextAreaFieldProps = {
     label: string;
     value: string;
     name: string;
+    id: string;
+    for?: string;
     placeholder: string;
     onChange: (value: any) => void;
     error?: string;
@@ -38,9 +42,10 @@ type TextAreaFieldProps = {
 
 export const TextAreaField: React.FC<TextAreaFieldProps> = ({ label, value, name, placeholder, onChange, error, required, rows }) => (
     <div>
-        <label>{label}</label>
+        <label htmlFor={id}>{label}</label>
         <textarea
             name={name}
+            id={id}
             value={value || ""}
             placeholder={placeholder}
             required={required}
