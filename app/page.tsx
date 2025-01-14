@@ -184,7 +184,7 @@ export default function HomePage() {
         headers: { "Content-Type": "multipart/form-data" }
       })
 
-      toast.success('Form submitted successfully!');
+      toast.success(resp.data.message);
       resetFormInput(true);
 
 
@@ -215,9 +215,9 @@ export default function HomePage() {
     setStep(1);
     setIsReview(false);
 
-    localStorage.removeItem('formData');
 
     if (!isReset) {
+      localStorage.removeItem('formData');
       toast.success('Form has been reset!');
     }
 
