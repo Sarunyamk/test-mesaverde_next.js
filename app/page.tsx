@@ -22,6 +22,7 @@ export default function HomePage() {
   const [step, setStep] = useState(1);
   const [isReview, setIsReview] = useState(false);
   const [errors, setErrors] = useState<ErrorType[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<FormDataType>({
     prefix: "",
@@ -175,6 +176,7 @@ export default function HomePage() {
   }
 
   const submitFormData = async () => {
+    setIsSubmitting(true);
     try {
 
       const formInputData = new FormData();
@@ -203,11 +205,7 @@ export default function HomePage() {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        Swal.fire({
-          title: "Submitted!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
+        setIsSubmitting(false);
 
         toast.success(resp.data.message);
         resetFormInput(true);
@@ -329,6 +327,16 @@ export default function HomePage() {
           </div>
         )}
       </div>
+      {isSubmitting && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="flex flex-col items-center">
+            <div className="loader"></div>
+            <p className="text-white mt-4">Sendind Form...</p>
+          </div>
+        </div>
+      )}
+
+
     </div >
   );
 }
