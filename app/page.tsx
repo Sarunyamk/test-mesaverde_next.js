@@ -1,101 +1,353 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+
+import { IoIosSave } from "react-icons/io";
+import { RiResetLeftFill } from "react-icons/ri";
+
+import { FormDataType } from './types/formDataType';
+import { ErrorType } from './types/errorType';
+import { Page1 } from './components/forms/Page1';
+import { Page2 } from './components/forms/Page2';
+import { Page3 } from './components/forms/Page3';
+import { ReviewForm } from './components/forms/ReviewForm';
+import { Button } from './components/Button';
+import { validateFile } from '@/ีutils/validateFile';
+
+export default function HomePage() {
+
+  const [step, setStep] = useState(1);
+  const [isReview, setIsReview] = useState(false);
+  const [errors, setErrors] = useState<ErrorType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  const [formData, setFormData] = useState<FormDataType>({
+    prefix: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    gender: "",
+    age: 0,
+    address: "",
+    education: "",
+    experience: "",
+    resumeUrl: null,
+  })
+
+
+  const hdlNextStep = () => {
+
+    const currentErrors: ErrorType[] = [];
+
+    if (step === 1) {
+
+      if (!formData.prefix || !["Mr", "Ms", "Mrs", "Other"].includes(formData.prefix)) {
+        currentErrors.push({ field: "prefix", message: "Prefix is required and must be valid." });
+      }
+      if (!formData.firstName || !/^[a-zA-Zก-๙\s]+$/.test(formData.firstName)) {
+        currentErrors.push({
+          field: "firstName",
+          message: "First Name only contain characters (English or Thai), and no special symbols.",
+        });
+      }
+      if (!formData.lastName || !/^[a-zA-Zก-๙\s]+$/.test(formData.lastName)) {
+        currentErrors.push({
+          field: "lastName",
+          message: "Last Name must only contain characters (English or Thai), and no special symbols"
+        });
+      }
+      if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+        currentErrors.push({ field: "email", message: "Valid Email is required." });
+      }
+      if (!formData.phoneNumber || !/^\d{10}$/.test(formData.phoneNumber)) {
+        currentErrors.push({
+          field: "phoneNumber",
+          message: "Phone Number must be exactly 10 digits.",
+        });
+      }
+    }
+
+    if (step === 2) {
+
+      if (!formData.gender || !["Male", "Female", "Other"].includes(formData.gender)) {
+        currentErrors.push({ field: "gender", message: "Gender is required and must be valid." });
+      }
+      if (!formData.age || formData.age <= 0) {
+        currentErrors.push({
+          field: "age",
+          message: "Age must be greater than 0.",
+        });
+      }
+      if (!formData.address || formData.address.trim() === "") {
+        currentErrors.push({ field: "address", message: "Address is required." });
+      }
+    }
+
+    if (step === 3) {
+
+      if (!formData.education || !["HighSchool", "Diploma", "Bachelor", "Master", "Doctorate", "Other"].includes(formData.education)) {
+        currentErrors.push({ field: "education", message: "Education is required and must be valid." });
+      }
+      if (!formData.experience || formData.experience.trim() === "") {
+        currentErrors.push({
+          field: "experience",
+          message: "Work Experience is required.",
+        });
+      }
+
+      if (formData.resumeUrl) {
+        if (formData.resumeUrl instanceof File) {
+          const fileError = validateFile(formData.resumeUrl);
+          if (fileError) {
+            currentErrors.push({ field: "resumeUrl", message: fileError });
+          }
+        } else {
+          currentErrors.push({ field: "resumeUrl", message: "Invalid file uploaded." });
+        }
+      } else {
+        currentErrors.push({ field: "resumeUrl", message: "Resume file is required." });
+      }
+
+    }
+
+    if (step === 4) {
+      setIsReview(true);
+    }
+
+    setErrors(currentErrors);
+    console.log("Current Step:", step);
+    console.log("Errors:", currentErrors);
+
+    setIsFirstLoad(true)
+
+    if (currentErrors.length === 0) {
+      setStep((prev) => Math.min(prev + 1, 4));
+    }
+
+  }
+
+  const getErrorMessage = (field: string) => {
+
+    return errors.find((error) => error.field === field)?.message;
+  };
+
+  const hdlPrevStep = () => {
+    setIsFirstLoad(false)
+    setStep((prev) => Math.max(prev - 1, 1));
+  }
+
+  const updateFormData = (newData: Partial<FormDataType>) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      ...newData,
+    }));
+  };
+
+  const renderStepPage = () => {
+
+    if (step === 1) {
+      return <Page1
+        formData={formData}
+        updateFormData={updateFormData}
+        getErrorMessage={getErrorMessage}
+        isFirstLoad={isFirstLoad}
+      />
+    }
+    else if (step === 2) {
+      return <Page2
+        formData={formData}
+        updateFormData={updateFormData}
+        getErrorMessage={getErrorMessage}
+        isFirstLoad={isFirstLoad}
+      />
+    }
+    else if (step === 3) {
+      return <Page3
+        formData={formData}
+        updateFormData={updateFormData}
+        getErrorMessage={getErrorMessage}
+        isFirstLoad={isFirstLoad}
+      />
+    }
+    else if (step === 4) {
+      return <ReviewForm
+        formData={formData}
+        isFirstLoad={isFirstLoad}
+      />
+    }
+  }
+
+  const submitFormData = async () => {
+    setIsLoading(true);
+    try {
+
+      const formInputData = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formInputData.append(key, value);
+        } else {
+          formInputData.append(key, String(value));
+        }
+      });
+
+
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to submit this form?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, submit it!",
+        cancelButtonText: "No, cancel",
+      });
+
+      if (result.isConfirmed) {
+
+        const resp = await axios.post("/api/form", formInputData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        setIsLoading(false);
+
+        toast.success(resp.data.message);
+        resetFormInput(true);
+      } else {
+        Swal.fire({
+          title: "Cancelled",
+          text: "Your form submission has been cancelled.",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+      }
+
+    } catch (error) {
+      toast.error('Error submitting form data');
+    }
+  }
+
+  const resetFormInput = (isReset = true) => {
+
+    setFormData({
+
+      prefix: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      gender: "",
+      age: 0,
+      address: "",
+      education: "",
+      experience: "",
+      resumeUrl: null,
+    })
+
+    setErrors([]);
+    setStep(1);
+    setIsReview(false);
+
+
+    if (!isReset) {
+      localStorage.removeItem('formData');
+      toast.success('Form has been reset!');
+    }
+
+  }
+
+  const hdlResetForm = () => {
+    try {
+
+      Swal.fire({
+        title: "Are you sure you want to reset the form?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, reset form!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          resetFormInput(false);
+          Swal.fire({
+            title: "Reset successful!",
+            icon: "success"
+          });
+        }
+      });
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  useEffect(() => {
+
+    const savedFormData = localStorage.getItem('formData');
+
+    if (savedFormData) {
+      setFormData(JSON.parse(savedFormData));
+    }
+
+    setIsFirstLoad(false);
+
+  }, [])
+
+
+  const saveFormDataTolocalStorage = () => {
+
+    localStorage.setItem('formData', JSON.stringify(formData));
+    toast.success('Data saved successfully!');
+
+  }
+
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen flex items-center justify-center p-6 text-black">
+      <div className="bg-white p-6 rounded shadow-lg w-full max-w-xl">
+        <div className="flex justify-center relative">
+          <h1 className="text-2xl font-bold mb-4 text-center">
+            {step < 4 ? "Multistep Form" : "Review Form"}
+          </h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          <div>
+            <Button onClick={hdlResetForm} title="Reset form" text={<RiResetLeftFill size={18} />} customize="absolute right-10 bg-red-500" />
+            <Button onClick={saveFormDataTolocalStorage} title="Save form" text={<IoIosSave size={18} />} customize="absolute right-0 bg-green-500" />
+          </div>
+
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <div>
+          {renderStepPage()}
+        </div>
+        {!isReview && (
+          <div className="flex justify-between mt-4">
+            {step && (
+              <Button onClick={hdlPrevStep} text="Previous"
+                customize={`bg-blue-500 ${step === 1 ? "bg-gray-400 cursor-not-allowed" : ""}`} disabled={step === 1} />
+            )}
+            {step === 4 ? (
+              <Button onClick={submitFormData} text="Submit" customize="bg-green-500" />
+            ) : (
+              <Button onClick={hdlNextStep} text="Next" customize="bg-blue-500" />
+            )}
+          </div>
+        )}
+      </div>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="flex flex-col items-center">
+            <div className="loader"></div>
+            <p className="text-white mt-4">Sendind Form...</p>
+          </div>
+        </div>
+      )}
+
+
+    </div >
   );
 }
