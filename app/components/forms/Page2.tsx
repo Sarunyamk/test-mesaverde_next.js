@@ -6,7 +6,7 @@ export const Page2: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
     return (
         <div>
             <div className='mb-4'>
-                <label className="block text-gray-700">Gender</label>
+                <label className="block font-bold">Gender</label>
                 <div className="flex gap-4 mt-2">
                     {["Male", "Female", "Other"].map((gender) => (
                         <label key={gender} className="inline-flex items-center">

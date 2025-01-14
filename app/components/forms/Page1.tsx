@@ -1,13 +1,14 @@
 import { PageProps } from '@/app/types/formDataType'
-import { InputField, TextAreaField } from '../InputField'
+import { InputField } from '../InputField'
 
 export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage }) => {
 
     return (
         <div>
             <div className='mb-4'>
-                <label>Prefix</label>
+                <label className="font-bold">Prefix</label>
                 <select
+                    className='w-full border p-2 border-gray-300 rounded mt-2'
                     value={formData.prefix}
                     onChange={(e) => updateFormData({ prefix: e.target.value })} >
                     <option value={""}>Select Prefix</option>
@@ -16,7 +17,7 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                     <option value="Mrs">Mrs.</option>
                     <option value="Other">Other</option>
                 </select>
-                {getErrorMessage("prefix") && <p className='text-red-500'>{getErrorMessage("prefix")}</p>}
+                {getErrorMessage("prefix") && <p className='text-red-500 text-sm'>{getErrorMessage("prefix")}</p>}
             </div>
             <InputField
                 label='First Name'

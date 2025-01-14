@@ -1,12 +1,26 @@
 import { PageProps } from '@/app/types/formDataType'
-import { InputField, TextAreaField } from '../InputField'
+import { TextAreaField } from '../InputField'
+import { validateFile } from '@/ีutils/validateFile';
 
 export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage }) => {
+
+    const hdlShowSelectFile = (file: File | null) => {
+        if (file) {
+            const error = validateFile(file);
+            if (error) {
+                updateFormData({ resumeUrl: null });
+            } else {
+                updateFormData({ resumeUrl: file });
+            }
+        } else {
+            updateFormData({ resumeUrl: null });
+        }
+    };
 
     return (
         <div>
             <div className='mb-4'>
-                <label className="block text-gray-700">Education</label>
+                <label className="block font-bold">Education</label>
                 <select
                     value={formData.education}
                     onChange={(e) => updateFormData({ education: e.target.value })}
@@ -34,17 +48,25 @@ export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
                 rows={4}
                 onChange={(value) => updateFormData({ experience: value })} />
             {getErrorMessage("experience") && (
-                <p className="text-red-500 text-xs">{getErrorMessage("experience")}</p>
+                <p className="text-red-500 text-xs mb-4">{getErrorMessage("experience")}</p>
             )}
-            <InputField
-                label='Position'
-                type="text"
-                name="position"
-                id="position"
-                placeholder='Enter your position'
-                value={formData.position}
-                onChange={(value) => updateFormData({ position: value })}
-                error={getErrorMessage("position")} />
+
+            <div className="flex flex-col gap-2">
+                <label className="font-bold">Upload Resume:</label>
+                <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    onChange={(e) => hdlShowSelectFile(e.target.files?.[0] || null)}
+                />
+                {formData.resumeUrl && (
+                    <p className="mt-2 text-sm text-gray-500">Selected File: {formData.resumeUrl.name}</p>
+                )}
+                {getErrorMessage("resumeUrl") && (
+                    <p className="text-red-500 text-xs">{getErrorMessage("resumeUrl")}</p>
+                )}
+            </div>
+
         </div>
     )
 }

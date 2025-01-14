@@ -9,7 +9,6 @@ export type FormDataType = {
     address: string;
     education: string;
     experience: string;
-    position: string;
     resumeUrl: File | null;
 }
 

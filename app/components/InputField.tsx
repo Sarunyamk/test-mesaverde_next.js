@@ -12,8 +12,8 @@ type InputFieldProps = {
 
 export const InputField: React.FC<InputFieldProps> = ({ label, type, id, value, name, placeholder, onChange, error, required }) => (
 
-    <div>
-        <label htmlFor={id}>{label}</label>
+    <div className="flex flex-col mb-4 gap-1">
+        <label htmlFor={id} className="font-bold">{label}</label>
         <input
             type={type}
             name={name}
@@ -22,7 +22,7 @@ export const InputField: React.FC<InputFieldProps> = ({ label, type, id, value, 
             placeholder={placeholder}
             required={required}
             onChange={(e) => onChange(e.target.value)}
-            className={`border p-2 rounded mt-2 ${error ? "border-red-500 " : "border-gray-300"}`} />
+            className={`border p-2 rounded ${error ? "border-red-500 " : "border-gray-300"}`} />
         {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
 )
@@ -40,8 +40,8 @@ type TextAreaFieldProps = {
 }
 
 export const TextAreaField: React.FC<TextAreaFieldProps> = ({ label, value, id, name, placeholder, onChange, error, required, rows }) => (
-    <div>
-        <label htmlFor={id}>{label}</label>
+    <div className="flex flex-col mb-1 gap-1">
+        <label className="font-bold">{label}</label>
         <textarea
             name={name}
             value={value || ""}
@@ -49,7 +49,7 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({ label, value, id, 
             required={required}
             onChange={(e) => onChange(e.target.value)}
             rows={rows}
-            className={`border p-2 rounded mt-2 ${error ? "border-red-500 " : "border-gray-300"}`} />
+            className={`border p-2 rounded ${error ? "border-red-500 " : "border-gray-300"}`} />
         {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
 )

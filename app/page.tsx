@@ -15,6 +15,7 @@ import { Page2 } from './components/forms/Page2';
 import { Page3 } from './components/forms/Page3';
 import { ReviewForm } from './components/forms/ReviewForm';
 import { Button } from './components/Button';
+import { validateFile } from '@/ีutils/validateFile';
 
 export default function HomePage() {
 
@@ -33,9 +34,9 @@ export default function HomePage() {
     address: "",
     education: "",
     experience: "",
-    position: "",
     resumeUrl: null,
   })
+
 
   const hdlNextStep = () => {
 
@@ -96,12 +97,20 @@ export default function HomePage() {
           message: "Work Experience is required.",
         });
       }
-      if (!formData.position || formData.position.trim() === "") {
-        currentErrors.push({
-          field: "position",
-          message: "Position is required.",
-        });
+
+      if (formData.resumeUrl) {
+        if (formData.resumeUrl instanceof File) {
+          const fileError = validateFile(formData.resumeUrl);
+          if (fileError) {
+            currentErrors.push({ field: "resumeUrl", message: fileError });
+          }
+        } else {
+          currentErrors.push({ field: "resumeUrl", message: "Invalid file uploaded." });
+        }
+      } else {
+        currentErrors.push({ field: "resumeUrl", message: "Resume file is required." });
       }
+
     }
 
     if (step === 4) {
@@ -170,9 +179,7 @@ export default function HomePage() {
 
       const formInputData = new FormData();
 
-      Object.keys(formData).forEach((key) => {
-        const value = formData[key as keyof FormDataType];
-
+      Object.entries(formData).forEach(([key, value]) => {
         if (value instanceof File) {
           formInputData.append(key, value);
         } else {
@@ -180,13 +187,38 @@ export default function HomePage() {
         }
       });
 
-      const resp = await axios.post("/api/form", formInputData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      })
 
-      toast.success(resp.data.message);
-      resetFormInput(true);
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to submit this form?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, submit it!",
+        cancelButtonText: "No, cancel",
+      });
 
+      if (result.isConfirmed) {
+
+        const resp = await axios.post("/api/form", formInputData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        Swal.fire({
+          title: "Submitted!",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+
+        toast.success(resp.data.message);
+        resetFormInput(true);
+      } else {
+        Swal.fire({
+          title: "Cancelled",
+          text: "Your form submission has been cancelled.",
+          icon: "info",
+          confirmButtonText: "OK",
+        });
+      }
 
     } catch (error) {
       toast.error('Error submitting form data');
@@ -207,7 +239,6 @@ export default function HomePage() {
       address: "",
       education: "",
       experience: "",
-      position: "",
       resumeUrl: null,
     })
 
@@ -281,7 +312,9 @@ export default function HomePage() {
 
         </div>
 
-        {renderStepPage()}
+        <div>
+          {renderStepPage()}
+        </div>
         {!isReview && (
           <div className="flex justify-between mt-4">
             {step && (

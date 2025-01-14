@@ -25,7 +25,6 @@ model Candidate {
   address     String    @db.Text
   education   Education
   experience  String    @db.Text
-  position    String
   resumeUrl   String?   @map("resume_url")
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
