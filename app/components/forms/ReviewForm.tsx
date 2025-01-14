@@ -6,9 +6,9 @@ export const ReviewForm: React.FC<FormDataTypeProps> = ({ formData, isFirstLoad 
     return (
         <div className="h-[480px] overflow-y-auto flex flex-col gap-3">
             <motion.ul
-                initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+                initial={isFirstLoad ? { opacity: 0, y: 20 } : false}
                 animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
-                transition={{ duration: 2 }}
+                transition={{ duration: 0.5 }}
                 className="mb-4">
                 {Object.keys(formData).map((key) => {
                     if (key === "resumeUrl" && formData.resumeUrl instanceof File) {

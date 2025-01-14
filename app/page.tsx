@@ -272,10 +272,6 @@ export default function HomePage() {
       }).then((result) => {
         if (result.isConfirmed) {
           resetFormInput(false);
-          Swal.fire({
-            title: "Reset successful!",
-            icon: "success"
-          });
         }
       });
 

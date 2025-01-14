@@ -9,9 +9,9 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
     return (
         <div>
             <motion.div
-                initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+                initial={isFirstLoad ? { opacity: 0, y: 20 } : false}
                 animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
-                transition={{ duration: 2 }}
+                transition={{ duration: 0.5 }}
                 className='mb-4'>
                 <label className="font-bold">Prefix</label>
                 <select

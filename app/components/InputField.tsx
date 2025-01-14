@@ -1,5 +1,4 @@
 
-import { useFirstLoad } from "@/ีutils/motionFirstLoading";
 import { motion } from "framer-motion";
 
 type InputFieldProps = {
@@ -20,9 +19,9 @@ export const InputField: React.FC<InputFieldProps> = ({ label, type, id, value, 
 
     return (
         <motion.div
-            initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+            initial={isFirstLoad ? { opacity: 0, y: 20 } : false}
             animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
-            transition={{ duration: 2 }}
+            transition={{ duration: 0.5 }}
             className="flex flex-col mb-4 gap-1">
             <label htmlFor={id} className="font-bold">{label}</label>
             <input
@@ -62,9 +61,9 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({ label, value, id, 
 
     return (
         <motion.div
-            initial={isFirstLoad ? { opacity: 0, y: 50 } : false}
+            initial={isFirstLoad ? { opacity: 0, y: 20 } : false}
             animate={isFirstLoad ? { opacity: 1, y: 0 } : false}
-            transition={{ duration: 2 }}
+            transition={{ duration: 0.5 }}
             className="flex flex-col mb-1 gap-1">
             <label className="font-bold">{label}</label>
             <textarea
