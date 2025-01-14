@@ -14,6 +14,7 @@ import { Page1 } from './components/forms/Page1';
 import { Page2 } from './components/forms/Page2';
 import { Page3 } from './components/forms/Page3';
 import { ReviewForm } from './components/forms/ReviewForm';
+import { Button } from './components/Button';
 
 export default function HomePage() {
 
@@ -108,6 +109,9 @@ export default function HomePage() {
     }
 
     setErrors(currentErrors);
+    console.log("Current Step:", step);
+    console.log("Errors:", currentErrors);
+
 
     if (currentErrors.length === 0) {
       setStep((prev) => Math.min(prev + 1, 4));
@@ -117,7 +121,7 @@ export default function HomePage() {
 
   const getErrorMessage = (field: string) => {
 
-    errors.find((error) => error.field === field)?.message;
+    return errors.find((error) => error.field === field)?.message;
   };
 
   const hdlPrevStep = () => {
@@ -181,6 +185,7 @@ export default function HomePage() {
       })
 
       toast.success('Form submitted successfully!');
+      resetFormInput(true);
 
 
     } catch (error) {
@@ -230,6 +235,7 @@ export default function HomePage() {
         confirmButtonText: "Yes, reset form!"
       }).then((result) => {
         if (result.isConfirmed) {
+          resetFormInput(false);
           Swal.fire({
             title: "Reset successful!",
             icon: "success"
@@ -269,14 +275,8 @@ export default function HomePage() {
           </h1>
 
           <div>
-            <button onClick={hdlResetForm} title="Reset form"
-              className="bg-red-500 text-white p-2 rounded absolute right-10 hover:scale-105 duration-300">
-              <RiResetLeftFill size={18} />
-            </button>
-            <button onClick={saveFormDataTolocalStorage} title="Save form"
-              className="bg-green-500 text-white p-2 rounded absolute right-0 hover:scale-105 duration-300">
-              <IoIosSave size={18} />
-            </button>
+            <Button onClick={hdlResetForm} title="Reset form" text={<RiResetLeftFill size={18} />} customize="absolute right-10 bg-red-500" />
+            <Button onClick={saveFormDataTolocalStorage} title="Save form" text={<IoIosSave size={18} />} customize="absolute right-0 bg-green-500" />
           </div>
 
         </div>
@@ -285,29 +285,13 @@ export default function HomePage() {
         {!isReview && (
           <div className="flex justify-between mt-4">
             {step && (
-              <button
-                onClick={hdlPrevStep}
-                disabled={step === 1}
-                className={`px-4 py-2 rounded text-white ${step === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:scale-105 duration-300"}`}
-              >
-                Previous
-              </button>
-
+              <Button onClick={hdlPrevStep} text="Previous"
+                customize={`bg-blue-500 ${step === 1 ? "bg-gray-400 cursor-not-allowed" : ""}`} disabled={step === 1} />
             )}
             {step === 4 ? (
-              <button
-                onClick={submitFormData}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:scale-105 duration-300"
-              >
-                Submit
-              </button>
+              <Button onClick={submitFormData} text="Submit" customize="bg-green-500" />
             ) : (
-              <button
-                onClick={hdlNextStep}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:scale-105 duration-300"
-              >
-                Next
-              </button>
+              <Button onClick={hdlNextStep} text="Next" customize="bg-blue-500" />
             )}
           </div>
         )}

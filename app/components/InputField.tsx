@@ -32,7 +32,6 @@ type TextAreaFieldProps = {
     value: string;
     name: string;
     id: string;
-    for?: string;
     placeholder: string;
     onChange: (value: any) => void;
     error?: string;
@@ -40,12 +39,11 @@ type TextAreaFieldProps = {
     rows?: number;
 }
 
-export const TextAreaField: React.FC<TextAreaFieldProps> = ({ label, value, name, placeholder, onChange, error, required, rows }) => (
+export const TextAreaField: React.FC<TextAreaFieldProps> = ({ label, value, id, name, placeholder, onChange, error, required, rows }) => (
     <div>
         <label htmlFor={id}>{label}</label>
         <textarea
             name={name}
-            id={id}
             value={value || ""}
             placeholder={placeholder}
             required={required}

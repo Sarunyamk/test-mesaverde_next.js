@@ -7,7 +7,9 @@ export const Page1: React.FC<PageProps> = ({ formData, updateFormData, getErrorM
         <div>
             <div className='mb-4'>
                 <label>Prefix</label>
-                <select>
+                <select
+                    value={formData.prefix}
+                    onChange={(e) => updateFormData({ prefix: e.target.value })} >
                     <option value={""}>Select Prefix</option>
                     <option value="Mr">Mr.</option>
                     <option value="Ms">Ms.</option>
