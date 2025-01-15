@@ -15,7 +15,7 @@ import { Page2 } from './components/forms/Page2';
 import { Page3 } from './components/forms/Page3';
 import { ReviewForm } from './components/forms/ReviewForm';
 import { Button } from './components/Button';
-import { validateFile } from '@/ีutils/validateFile';
+import { validateFile } from '@/utils/validateFile';
 
 export default function HomePage() {
 

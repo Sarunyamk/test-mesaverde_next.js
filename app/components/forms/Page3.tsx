@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 import { PageProps } from '@/app/types/formDataType'
 import { TextAreaField } from '../InputField'
-import { validateFile } from '@/ีutils/validateFile';
+import { validateFile } from '@/utils/validateFile';
 
 export const Page3: React.FC<PageProps> = ({ formData, updateFormData, getErrorMessage, isFirstLoad }) => {
 
